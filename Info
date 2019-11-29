@@ -1,10 +1,18 @@
 ###################Prometheous-Server#########################
-Prometheus server is the heart of the system. This server collects the metrics from multiple nodes and stores them locally. The Prometheus server works on the principle of scraping, i.e., invoking the metrics endpoints of the various nodes that it is configured to monitor. It collects these metrics at regular intervals and stores them locally. These metrics are pulled from nodes that run specific exporters (which are modules that extract information and translate it into the Prometheus format, which the server can then ingest). The nodes expose these over the endpoints that the Prometheus server scrapes.
 
+Prometheus server is the heart of the system. This server collects the metrics from multiple nodes and stores them locally. 
+The Prometheus server works on the principle of scraping, i.e., invoking the metrics endpoints of the various nodes that it is
+configured to monitor. It collects these metrics at regular intervals and stores them locally. 
+These metrics are pulled from nodes that run specific exporters (which are modules that extract information and translate it 
+into the Prometheus format, which the server can then ingest). The nodes expose these over the endpoints that the Prometheus 
+server scrapes.
 You can view the nodes from the Prometheus UI by visiting /consoles/node.html endpoint
 
 ##################Node-Exporter#############################
- The node exporter is an application that runs on a daemonset pn each node and can collect various metrics like memory, disk I/O and more. It also exposes an endpoint, which the Prometheus server scrapes at regular intervals and collects the metrics.
+
+ The node exporter is an application that runs on a daemonset pn each node and can collect various metrics like memory, 
+ disk I/O and more. It also exposes an endpoint, which the Prometheus server scrapes at regular intervals and collects the 
+ metrics.
 
 Ex: It mounts the volume from
   containers:
@@ -24,17 +32,29 @@ Ex: It mounts the volume from
 
 
 ##################Push-Gateway#################################
-Push gateway: In case the nodes are not exposing an endpoint from which the Prometheus server can collect the metrics, the Prometheus ecosystem has a push gateway. This gateway API is useful for one-off jobs that run, capture the data, transform that data into the Prometheus data format and then push that data into the Prometheus server.
+
+Push gateway: In case the nodes are not exposing an endpoint from which the Prometheus server can collect the metrics, 
+the Prometheus ecosystem has a push gateway. This gateway API is useful for one-off jobs that run, capture the data, 
+transform that data into the Prometheus data format and then push that data into the Prometheus server.
 
 
 
 
 ##################Kube-State-Metrics###########################
-kube-state-metrics is a simple service that listens to the Kubernetes API server and generates metrics about the state of the objects. (See examples in the Metrics section below.) It is not focused on the health of the individual Kubernetes components, but rather on the health of the various objects inside, such as deployments, nodes and pods.
 
-kube-state-metrics is about generating metrics from Kubernetes API objects without modification. This ensures that features provided by kube-state-metrics have the same grade of stability as the Kubernetes API objects themselves. In turn, this means that kube-state-metrics in certain situations may not show the exact same values as kubectl, as kubectl applies certain heuristics to display comprehensible messages. kube-state-metrics exposes raw data unmodified from the Kubernetes API, this way users have all the data they require and perform heuristics as they see fit.
+kube-state-metrics is a simple service that listens to the Kubernetes API server and generates metrics about the state of the
+objects. (See examples in the Metrics section below.) It is not focused on the health of the individual Kubernetes components,
+but rather on the health of the various objects inside, such as deployments, nodes and pods.
 
-The metrics are exported on the HTTP endpoint /metrics on the listening port (default 80). They are served as plaintext. They are designed to be consumed either by Prometheus itself or by a scraper that is compatible with scraping a Prometheus client endpoint. You can also open /metrics in a browser to see the raw metrics.
+kube-state-metrics is about generating metrics from Kubernetes API objects without modification. 
+This ensures that features provided by kube-state-metrics have the same grade of stability as the Kubernetes API objects 
+themselves. In turn, this means that kube-state-metrics in certain situations may not show the exact same values as kubectl, 
+as kubectl applies certain heuristics to display comprehensible messages. kube-state-metrics exposes raw data unmodified from
+the Kubernetes API, this way users have all the data they require and perform heuristics as they see fit.
+
+The metrics are exported on the HTTP endpoint /metrics on the listening port (default 80). They are served as plaintext. 
+They are designed to be consumed either by Prometheus itself or by a scraper that is compatible with scraping a Prometheus 
+client endpoint. You can also open /metrics in a browser to see the raw metrics.
 
 Example of the above mentioned metrics:
 
@@ -45,7 +65,11 @@ kube_state_metrics_watch_total{resource="*v1beta1.Ingress",result="success"} 1
 
 
 ##################Prometheous-Alert-Manager##########################
-Alert manager: One half of the Prometheus system is about collecting metrics. But of more importance is the ability to define your own alerts on those metrics, so that you can be notified in case of any discrepancies or levels that you might be interested in. This is the job of the alerts manager, which stores not just the alert levels but also can deliver these alerts to you over multiple channels like SMS, email, Slack, etc.
+
+Alert manager: One half of the Prometheus system is about collecting metrics. But of more importance is the ability to 
+define your own alerts on those metrics, so that you can be notified in case of any discrepancies or levels that you might 
+be interested in. This is the job of the alerts manager, which stores not just the alert levels but also can deliver these
+alerts to you over multiple channels like SMS, email, Slack, etc.
 
 
 

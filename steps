@@ -1,0 +1,83 @@
+
+#Fetch the helm templates 
+helm fetch stable/prometheus 
+
+# untar the prometheus charts
+tar -xvzf prometheus-***.tgz
+
+# changed to prometheus directory and modify the values yaml 
+
+# Changed the promethous service to NodePort from Cluster IP
+server:
+  ---
+  --- 
+  service:
+    nodePort: 30322
+    type: NodePort
+
+# Create Storage class (Using local storage here) --- kubectl apply -f sc.yaml
+cat <<EOF > sc.yaml 
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: my-local-pv
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+EOF 
+
+#Create 3 pvs for Prometheous_Server, Prometheus-alertmanager, Prometheus-pushgateway
+cat <<EOF > Prometheous-{{ pvname }}.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-local-pv2
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: my-local-pv
+  hostPath:
+    path: "/mnt/data* #( create this by 3 different names)"
+EOF
+
+Kubectl apply -f Prometheous-{{ pvname }}.yaml
+
+# Open Values.yaml file 
+
+server:
+ persistentVolume:
+    ## If true, Prometheus server will create/use a Persistent Volume Claim
+    ## If false, use emptyDir
+    ##
+    enabled: true
+    storageClass: my-local-pv
+
+pushgateway:
+ persistentVolume:
+    ## If true, Prometheus server will create/use a Persistent Volume Claim
+    ## If false, use emptyDir
+    ##
+    enabled: true
+    storageClass: my-local-pv
+
+alertmanager:
+ persistentVolume:
+    ## If true, Prometheus server will create/use a Persistent Volume Claim
+    ## If false, use emptyDir
+    ##
+    enabled: true
+    storageClass: my-local-pv
+
+# Deploy all the template charts
+helm install  ./prometheus --namespace prometheus
+
+# Done
+
+# Verify the all the PODs Up & Running under 
+kubectl get all -n prometheus
+
+# Open the browser with nodename and nodePort IP
+curl -k https://<<NodeIP>>:30322
+

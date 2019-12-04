@@ -1,0 +1,32 @@
+2
+
+1 Metrics-server is a cluster level component which periodically scrapes container CPU and memory usage metrics from all Kubernetes nodes served by Kubelet through Summary API.
+
+The Kubelet exports a "summary" API that aggregates stats from all pods.
+
+$ kubectl proxy &
+Starting to serve on 127.0.0.1:8001
+$ NODE=$(kubectl get nodes -o=jsonpath="{.items[0].metadata.name}")
+$ curl localhost:8001/api/v1/proxy/nodes/${NODE}:10255/stats/summary
+Use-Cases:
+
+Horizontal Pod Autoscaler:
+kubectl top --help: command
+
+
+2 kube-state-metrics (https://sysdig.com/blog/introducing-kube-state-metrics/)
+
+is focused on generating completely new metrics from Kubernetes' object state (e.g. metrics based on deployments, replica sets, etc.). It holds an entire snapshot of Kubernetes state in memory and continuously generates new metrics based off of it
+
+Use-Cases
+
+count the number of k8s Objects.
+How many namespaces are there ?
+sysdig-k8s-state-metrics provide the further Information.
+
+3 Prometheus Node_Exporter − Gets the host level matrices and exposes them to Prometheus.
+
+Use-Cases
+
+User and Kernel Space level information
+Lastly, kubernetes_sd_config isthe configuration file defines everything related to scraping targets.
